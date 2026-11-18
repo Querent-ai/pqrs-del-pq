@@ -23,7 +23,7 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
 #hint{position:fixed;z-index:4;font-size:10px;letter-spacing:.4em;color:#6d7390;opacity:0;transform:translate(-50%,0);pointer-events:none;transition:opacity 1.5s ease}
 .landed #mark,.landed #foot{opacity:1}
 /* research constellation */
-#rs{position:fixed;inset:0;z-index:6;background:radial-gradient(ellipse at var(--sx,70%) var(--sy,40%),rgba(40,30,80,.55),rgba(0,0,0,.94) 60%);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+#rs{position:fixed;inset:0;z-index:6;background:radial-gradient(ellipse at var(--sx,70%) var(--sy,40%),rgba(20,60,130,.55),rgba(0,0,0,.94) 60%);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
  opacity:0;pointer-events:none;transition:opacity .6s ease;display:flex;align-items:center;justify-content:center;padding:24px}
 #rs.on{opacity:1;pointer-events:auto}
 #tl{position:relative;max-width:620px;width:100%;padding-left:30px}
@@ -191,8 +191,12 @@ function render(n){buf.fill(BG);const at=k=>n>=SS[k][0]&&n<SS[k][1],m=k=>n-SS[k]
 
 /* ===== playback ===== */
 const SPEED=1.6,body=document.body;let raf,t0=0,landedFlag=false;
+let replaying=false;
 function land(){if(landedFlag)return;landedFlag=true;cancelAnimationFrame(raf);body.classList.add('landed');try{sessionStorage.setItem('pqrs_landed','1')}catch(e){}
+ if(replaying){replaying=false;setTimeout(()=>rs.classList.add('on'),900);return}
  setTimeout(()=>{hint.style.opacity=.9;setTimeout(()=>hint.style.opacity=0,4200)},1800)}
+/* tap the neutron star → replay the ∆P\Q boot, then open the research constellation */
+function replay(){if(!landedFlag)return;replaying=true;landedFlag=false;t0=0;buf.fill(BG);cx.putImageData(img,0,0);body.classList.remove('landed');raf=requestAnimationFrame(tick)}
 function tick(now){if(!t0)t0=now;const n=Math.floor((now-t0)*60*SPEED/1000);if(n>=TOTAL){land();return}render(n);raf=requestAnimationFrame(tick)}
 document.getElementById('skip').onclick=land;
 addEventListener('keydown',e=>{if(e.key==='Escape'){if(rs.classList.contains('on'))close();else land()}});
@@ -212,28 +216,28 @@ function star(t){g.clearRect(0,0,FW,FH);
  for(const f of field){const a=.15+.55*f.b*(.5+.5*Math.sin(t*.0012+f.p));g.fillStyle=`rgba(200,205,255,${a})`;g.fillRect(f.x*FW,f.y*FH,f.b>.85?1.6:1,f.b>.85?1.6:1)}
  const P=1100,ph=(t%P)/P,pulse=Math.exp(-((ph-.5)**2)/.004)+Math.exp(-((ph-.0)**2)/.004)+Math.exp(-((ph-1)**2)/.004),k=1+.25*pulse+.25*hover+burst;
  // magnetosphere loops
- g.save();g.translate(SX,SY);g.rotate(.35);g.strokeStyle=`rgba(155,123,255,${.18+.1*hover})`;g.lineWidth=1;
+ g.save();g.translate(SX,SY);g.rotate(.35);g.strokeStyle=`rgba(60,150,255,${.22+.12*hover})`;g.lineWidth=1;
  for(const s of[1.6,2.4,3.4]){g.beginPath();g.ellipse(SR*s,0,SR*s,SR*s*.62,0,0,TAU);g.stroke();g.beginPath();g.ellipse(-SR*s,0,SR*s,SR*s*.62,0,0,TAU);g.stroke()}g.restore();
  // rotating pulsar beams
  const ang=t*.0057;g.save();g.translate(SX,SY);g.rotate(ang);g.globalCompositeOperation='lighter';
- for(const d of[0,Math.PI]){const L=Math.max(FW,FH)*.55,gr=g.createLinearGradient(0,0,L,0);gr.addColorStop(0,`rgba(140,190,255,${.42*k})`);gr.addColorStop(1,'rgba(140,190,255,0)');
+ for(const d of[0,Math.PI]){const L=Math.max(FW,FH)*.55,gr=g.createLinearGradient(0,0,L,0);gr.addColorStop(0,`rgba(70,160,255,${.5*k})`);gr.addColorStop(1,'rgba(40,120,255,0)');
   g.save();g.rotate(d);g.fillStyle=gr;g.beginPath();g.moveTo(0,0);g.lineTo(L,-L*.05);g.lineTo(L,L*.05);g.closePath();g.fill();g.restore()}g.restore();
  // glow + core
  g.save();g.globalCompositeOperation='lighter';
- let gr=g.createRadialGradient(SX,SY,0,SX,SY,SR*7*k);gr.addColorStop(0,'rgba(170,200,255,.55)');gr.addColorStop(.25,'rgba(120,110,255,.18)');gr.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=gr;g.fillRect(SX-SR*8*k,SY-SR*8*k,SR*16*k,SR*16*k);
- gr=g.createRadialGradient(SX,SY,0,SX,SY,SR*1.4);gr.addColorStop(0,'#ffffff');gr.addColorStop(.5,'rgba(220,235,255,.95)');gr.addColorStop(1,'rgba(150,180,255,0)');g.fillStyle=gr;g.beginPath();g.arc(SX,SY,SR*1.4,0,TAU);g.fill();
+ let gr=g.createRadialGradient(SX,SY,0,SX,SY,SR*7*k);gr.addColorStop(0,'rgba(110,190,255,.6)');gr.addColorStop(.25,'rgba(30,120,255,.22)');gr.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=gr;g.fillRect(SX-SR*8*k,SY-SR*8*k,SR*16*k,SR*16*k);
+ gr=g.createRadialGradient(SX,SY,0,SX,SY,SR*1.4);gr.addColorStop(0,'#f2fbff');gr.addColorStop(.45,'rgba(150,215,255,.95)');gr.addColorStop(1,'rgba(40,130,255,0)');g.fillStyle=gr;g.beginPath();g.arc(SX,SY,SR*1.4,0,TAU);g.fill();
  // diffraction spikes
- g.strokeStyle=`rgba(230,240,255,${.55*k})`;g.lineWidth=1;for(const a of[0,Math.PI/2,Math.PI/4,-Math.PI/4]){const l=SR*(a%(Math.PI/2)?3:6)*k;g.beginPath();g.moveTo(SX-l*Math.cos(a),SY-l*Math.sin(a));g.lineTo(SX+l*Math.cos(a),SY+l*Math.sin(a));g.stroke()}
+ g.strokeStyle=`rgba(170,220,255,${.6*k})`;g.lineWidth=1;for(const a of[0,Math.PI/2,Math.PI/4,-Math.PI/4]){const l=SR*(a%(Math.PI/2)?3:6)*k;g.beginPath();g.moveTo(SX-l*Math.cos(a),SY-l*Math.sin(a));g.lineTo(SX+l*Math.cos(a),SY+l*Math.sin(a));g.stroke()}
  // sparkles
  for(const s of sparks){const a=s.a+t*.0004*s.s*3,r=SR*s.r*(1+.15*Math.sin(t*.002+s.p))*(1+burst*2),x=SX+r*Math.cos(a),y=SY+r*Math.sin(a)*.8,tw=Math.max(0,Math.sin(t*.004*s.z+s.p));
-  if(tw<.15)continue;const z=s.z*tw*1.4;g.fillStyle=`rgba(255,${230-60*(s.p%1)},${180+60*(s.r%1)},${tw})`;g.fillRect(x-z/2,y-z/2,z,z);
-  if(tw>.92){g.strokeStyle=`rgba(255,244,214,${tw*.7})`;g.beginPath();g.moveTo(x-z*2.5,y);g.lineTo(x+z*2.5,y);g.moveTo(x,y-z*2.5);g.lineTo(x,y+z*2.5);g.stroke()}}
+  if(tw<.15)continue;const z=s.z*tw*1.4;g.fillStyle=`rgba(${90+90*(s.p%1)},${190+50*(s.r%1)},255,${tw})`;g.fillRect(x-z/2,y-z/2,z,z);
+  if(tw>.92){g.strokeStyle=`rgba(200,235,255,${tw*.7})`;g.beginPath();g.moveTo(x-z*2.5,y);g.lineTo(x+z*2.5,y);g.moveTo(x,y-z*2.5);g.lineTo(x,y+z*2.5);g.stroke()}}
  g.restore();
  burst*=.93;requestAnimationFrame(star)}
 requestAnimationFrame(star);
 const onStar=(x,y)=>Math.hypot(x-SX,y-SY)<Math.max(SR*3.2,34);
 fx.addEventListener('pointermove',e=>{const h=onStar(e.clientX,e.clientY);hover=h?1:0;fx.style.cursor=h?'pointer':'default'});
-fx.addEventListener('click',e=>{if(!onStar(e.clientX,e.clientY))return;burst=.9;hint.style.opacity=0;setTimeout(()=>rs.classList.add('on'),260)});
+fx.addEventListener('click',e=>{if(!onStar(e.clientX,e.clientY)||!landedFlag)return;burst=.9;hint.style.opacity=0;setTimeout(replay,420)});
 function close(){rs.classList.remove('on')}
 document.getElementById('x').onclick=close;rs.addEventListener('click',e=>{if(e.target===rs)close()});
 </script></body></html>
