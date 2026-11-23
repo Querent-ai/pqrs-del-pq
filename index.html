@@ -13,7 +13,7 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
 #bg{image-rendering:pixelated;object-fit:cover;z-index:1;opacity:0;transition:opacity 1.6s ease}
 #fx{z-index:2;opacity:0;transition:opacity 1.6s ease;cursor:default}
 .landed #bg{opacity:.85}.landed #fx{opacity:1}.landed #boot{opacity:0;pointer-events:none}
-#skip{position:fixed;right:max(16px,env(safe-area-inset-right));bottom:max(14px,env(safe-area-inset-bottom));z-index:4;background:none;border:0;color:#3a3f52;font:12px ui-monospace,monospace;letter-spacing:.2em;cursor:pointer;transition:color .3s,opacity .6s}
+#skip{position:fixed;right:max(12px,env(safe-area-inset-right));top:max(10px,env(safe-area-inset-top));z-index:4;background:none;border:0;padding:12px 8px;min-height:44px;color:#3a3f52;font:12px ui-monospace,monospace;letter-spacing:.2em;cursor:pointer;transition:color .3s,opacity .6s}
 #skip:hover{color:#f2c46d}.landed #skip{opacity:0;pointer-events:none}
 #mark{position:fixed;left:max(20px,env(safe-area-inset-left));top:max(18px,env(safe-area-inset-top));z-index:4;display:flex;align-items:center;gap:10px;opacity:0;transition:opacity 1.2s ease .6s;color:#f2c46d;font-weight:600;letter-spacing:.32em;font-size:13px}
 #mark canvas{position:static;width:30px;height:30px;image-rendering:pixelated}
